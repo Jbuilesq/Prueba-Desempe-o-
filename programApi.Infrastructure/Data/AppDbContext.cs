@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using programApi.Domain.Entities;
 using System.Reflection;
+using Microsoft.AspNetCore.Identity;
 
 namespace programApi.Infrastructure.Data;
 
@@ -13,7 +14,12 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        base.OnModelCreating(builder);
+        base.OnModelCreating(builder);   // ← indispensable
+
+        builder.Entity<Employee>()
+            .HasOne<IdentityUser<int>>()
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

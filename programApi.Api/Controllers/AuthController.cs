@@ -7,6 +7,7 @@ using programApi.Application.Interfaces;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 
 namespace programApi.Api.Controllers;
 
@@ -25,6 +26,16 @@ public class AuthController : ControllerBase
         _userManager = userManager;
         _tokenService = tokenService;
         _config = config;
+    }
+    
+    
+    [HttpGet("roles")]
+    public async Task<IActionResult> MyRoles()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null) return NotFound();
+        var roles = await _userManager.GetRolesAsync(user);
+        return Ok(roles);
     }
 
     [HttpPost("register")]
@@ -46,7 +57,11 @@ public class AuthController : ControllerBase
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
             return Unauthorized("Invalid credentials");
 
-        var claims = await _userManager.GetClaimsAsync(user);
+        // Claims propios + roles
+        var claims = (await _userManager.GetClaimsAsync(user)).ToList(); // ← mutable
+        var roles  = await _userManager.GetRolesAsync(user);
+        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
         var accessToken = _tokenService.GenerateAccessToken(claims);
         var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user.Id);
 

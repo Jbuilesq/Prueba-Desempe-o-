@@ -31,4 +31,6 @@ public class Employee
 
     // ---------- Helper ----------
     public string FullName => $"{FirstName} {LastName}".Trim();
+    
+    public int? UserId { get; set; } 
 }

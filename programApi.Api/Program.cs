@@ -4,8 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using programApi.Application.Interface;
 using programApi.Application.Interfaces;
+using programApi.Application.Services;
+using programApi.Domain.Interfaces;
 using programApi.Infrastructure.Data;
+using programApi.Infrastructure.Repositories;
 using programApi.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -92,6 +96,9 @@ builder.Services.AddControllers();
 
 // ---------- Services ----------
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 // ------------------------------------------
 
 var app = builder.Build();
