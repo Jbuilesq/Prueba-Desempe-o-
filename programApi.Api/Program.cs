@@ -118,6 +118,7 @@ await SeedRolesAsync(roleMgr, userMgr);
 
 app.Run();
 
+
 static async Task SeedRolesAsync(RoleManager<IdentityRole<int>> roleMgr,
     UserManager<IdentityUser<int>> userMgr)
 {
@@ -127,6 +128,7 @@ static async Task SeedRolesAsync(RoleManager<IdentityRole<int>> roleMgr,
         await roleMgr.CreateAsync(new IdentityRole<int>("User"));
 
     // Admin por defecto
+    //c
     var admin = await userMgr.FindByEmailAsync("admin@talentoplus.com");
     if (admin is null)
     {
