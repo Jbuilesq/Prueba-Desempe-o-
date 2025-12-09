@@ -14,6 +14,23 @@ using programApi.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionStrings = 
+    $"Server={Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost"};" +
+    $"Port={Environment.GetEnvironmentVariable("DB_PORT") ?? "3306"};" +
+    $"Database={Environment.GetEnvironmentVariable("DB_NAME") ?? "talentoplus"};" +
+    $"Uid={Environment.GetEnvironmentVariable("DB_USER") ?? "root"};" +
+    $"Pwd={Environment.GetEnvironmentVariable("DB_PASS") ?? "root"};";
+
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+jwtSettings["Secret"]  = Environment.GetEnvironmentVariable("JWT_SECRET") ?? jwtSettings["Secret"];
+jwtSettings["Issuer"]  = Environment.GetEnvironmentVariable("JWT_ISSUER")  ?? jwtSettings["Issuer"];
+jwtSettings["Audience"]= Environment.GetEnvironmentVariable("JWT_AUDIENCE")?? jwtSettings["Audience"];
+jwtSettings["ExpiryMinutes"] = Environment.GetEnvironmentVariable("JWT_EXPIRY_MINUTES") ?? "60";
+jwtSettings["RefreshExpiryDays"] = Environment.GetEnvironmentVariable("JWT_REFRESH_DAYS") ?? "7";
+
+
+
+
 // ---------- MySQL ----------
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -58,10 +75,10 @@ builder.Services.AddSwaggerGen(c =>
 // ------------------------------
 
 // ---------- JWT ----------
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["Secret"] ?? "talentoPlusSuperSecretKey";
-var issuer = jwtSettings["Issuer"] ?? "talentoplus";
-var audience = jwtSettings["Audience"] ?? "talentoplusemployees";
+var jwtSettings1 = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSettings1["Secret"] ?? "talentoPlusSuperSecretKey";
+var issuer = jwtSettings1["Issuer"] ?? "talentoplus";
+var audience = jwtSettings1["Audience"] ?? "talentoplusemployees";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
